@@ -26,4 +26,7 @@ public class NumericDouble implements Numeric<NumericDouble>{
     public NumericDouble invert() {
         return new NumericDouble(1/value);
     }
+
+    public static final NumericDouble ZERO = new NumericDouble(0);
+    public static final NumericDouble ONE = new NumericDouble(1);
 }
