@@ -1,4 +1,4 @@
-package dyomin.mikhail.vision.math;
+package dyomin.mikhail.vision.math.numeric;
 
 public class Complex implements Numeric<Complex> {
     public final double real;
@@ -62,9 +62,4 @@ public class Complex implements Numeric<Complex> {
     public static Complex ofModulusAndArgument(double modulus, double argument){
         return new Complex(modulus * Math.cos(argument), modulus*Math.sin(argument));
     }
-
-    public static final Complex ZERO = new Complex(0, 0);
-    public static final Complex ONE = new Complex(1, 0);
-    public static final Complex J = new Complex(0, 1);
-
 }

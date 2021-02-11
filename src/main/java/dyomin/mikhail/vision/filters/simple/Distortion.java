@@ -8,7 +8,7 @@ import dyomin.mikhail.vision.vectors.Vector;
 import java.util.function.BiFunction;
 
 public abstract class Distortion<V extends Vector<V>> implements SimpleImageFilter<V, V> {
-    protected abstract Direction distort(int x, int y);
+    protected abstract Direction distort(double x, double y);
 
     @Override
     public final V filter(int x, int y, ReadableImage<V> image) {
@@ -28,10 +28,10 @@ public abstract class Distortion<V extends Vector<V>> implements SimpleImageFilt
         return result;
     }
 
-    public static <V extends Vector<V>> Distortion<V> withFunc(BiFunction<Integer, Integer, Direction> distorter) {
+    public static <V extends Vector<V>> Distortion<V> withFunc(BiFunction<Double, Double, Direction> distorter) {
         return new Distortion<V>() {
             @Override
-            protected Direction distort(int x, int y) {
+            protected Direction distort(double x, double y) {
                 return distorter.apply(x, y);
             }
         };
@@ -40,8 +40,8 @@ public abstract class Distortion<V extends Vector<V>> implements SimpleImageFilt
     public static <V extends Vector<V>> Distortion<V> precalculated(MatrixImage<Direction> distorter) {
         return new Distortion<V>() {
             @Override
-            protected Direction distort(int x, int y) {
-                return distorter.getPixel(x, y);
+            protected Direction distort(double x, double y) {
+                return distorter.getSubpixel(x, y);
             }
         };
     }

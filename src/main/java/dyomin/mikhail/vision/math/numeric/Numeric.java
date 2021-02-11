@@ -1,4 +1,4 @@
-package dyomin.mikhail.vision.math;
+package dyomin.mikhail.vision.math.numeric;
 
 public interface Numeric<N extends Numeric<N>> {
     N plus(N other);

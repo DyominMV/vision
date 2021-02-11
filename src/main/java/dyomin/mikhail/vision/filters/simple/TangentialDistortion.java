@@ -1,8 +1,11 @@
 package dyomin.mikhail.vision.filters.simple;
 
-import dyomin.mikhail.vision.math.DoublePowerSeries;
+import dyomin.mikhail.vision.math.powerseries.DoublePowerSeries;
 import dyomin.mikhail.vision.vectors.Direction;
 import dyomin.mikhail.vision.vectors.Vector;
+
+import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 public class TangentialDistortion<V extends Vector<V>> extends Distortion<V> {
     public final double centerX;
@@ -22,16 +25,19 @@ public class TangentialDistortion<V extends Vector<V>> extends Distortion<V> {
         this.centerY = centerY;
         this.tangentialCoefficient1 = tangentialCoefficient1;
         this.tangentialCoefficient2 = tangentialCoefficient2;
-        this.radialPartCoefficients = new DoublePowerSeries(
-                new DoublePowerSeries(radialPartCoefficients)
+        this.radialPartCoefficients =
+                new DoublePowerSeries(
+                        Arrays.stream(radialPartCoefficients)
+                                .flatMap(d -> DoubleStream.of(0, d))
+                                .toArray()
+                )
                         .moveRight()
-                        .plus(new DoublePowerSeries(new double[]{1.0}))
-        );
+                        .plus(new DoublePowerSeries(1.0));
     }
 
 
     @Override
-    protected Direction distort(int x, int y) {
+    protected Direction distort(double x, double y) {
         double dx = x - centerX;
         double dy = y - centerY;
         double rSquared = dx * dx + dy * dy;

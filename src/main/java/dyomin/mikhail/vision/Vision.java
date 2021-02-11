@@ -4,8 +4,10 @@ import com.github.sarxos.webcam.Webcam;
 import dyomin.mikhail.vision.filters.gauss.PseudoGaussianBlur;
 import dyomin.mikhail.vision.filters.gauss.SystemOrder;
 import dyomin.mikhail.vision.filters.simple.Amplifier;
+import dyomin.mikhail.vision.filters.simple.Distortion;
 import dyomin.mikhail.vision.filters.simple.RadialDistortion;
 import dyomin.mikhail.vision.filters.simple.TangentialDistortion;
+import dyomin.mikhail.vision.vectors.Direction;
 import dyomin.mikhail.vision.vectors.RGB;
 import dyomin.mikhail.vision.images.RgbImage;
 import dyomin.mikhail.vision.images.EditableImage;
@@ -47,24 +49,18 @@ public class Vision extends Application {
     private final PseudoGaussianBlur<RGB> pgb =
             new PseudoGaussianBlur<>(10, SystemOrder.THREE);
 
-    private final RadialDistortion<RGB> radialDistortion =
-            new RadialDistortion<>(320,240,
-                    1.0/10000,
-                    1.0/100000
-            );
+    private final RadialDistortion<RGB> distortion = new RadialDistortion<>(320, 240,
+            0.000001,
+            0.00000000001
+    );
 
-    private final TangentialDistortion<RGB> tangentialDistortion =
-            new TangentialDistortion<>(320,240,
-                    0,
-                    -1.0/10000,
-                    1e-11, 1e-11
-            );
-
+    private final RadialDistortion<RGB> undistortion = distortion.inverseDistortion();
 
     private EditableImage<RGB> handleImage(RgbImage rawImage) {
         EditableImage<RGB> result = rawImage.toMatrixImage()
                 .applyFilters(Arrays.asList(
-                        tangentialDistortion
+                        distortion,
+                        undistortion
                 ));
         return result;
     }

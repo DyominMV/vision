@@ -1,6 +1,6 @@
-package dyomin.mikhail.vision.math;
+package dyomin.mikhail.vision.math.numeric;
 
-public class NumericDouble implements Numeric<NumericDouble>{
+public class NumericDouble implements Numeric<NumericDouble> {
     public final double value;
 
     public NumericDouble(double value) {

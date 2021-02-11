@@ -3,9 +3,10 @@ package dyomin.mikhail.vision.filters.gauss;
 import dyomin.mikhail.vision.filters.ImageFilter;
 import dyomin.mikhail.vision.images.EditableImage;
 import dyomin.mikhail.vision.images.ReadableImage;
-import dyomin.mikhail.vision.math.Complex;
-import dyomin.mikhail.vision.math.ComplexPowerSeries;
-import dyomin.mikhail.vision.math.PowerSeries;
+import dyomin.mikhail.vision.math.numeric.Complex;
+import dyomin.mikhail.vision.math.numeric.factory.ComplexFactory;
+import dyomin.mikhail.vision.math.powerseries.ComplexPowerSeries;
+import dyomin.mikhail.vision.math.powerseries.PowerSeriesBase;
 import dyomin.mikhail.vision.vectors.Vector;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
                 ds = FIFTH_ORDERED_Ds;
         }
 
-        PowerSeries<Complex> b = ComplexPowerSeries.withRoots(
+        ComplexPowerSeries b = ComplexPowerSeries.withRoots(
                 Arrays.stream(ds)
                         .map(di -> Complex.ofModulusAndArgument(
                                 Math.pow(di.modulus(), 1.0 / q),
@@ -81,7 +82,7 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
         bCoefficients = b.getCoefficients().mapToDouble(c -> c.real).toArray();
         bCoefficients[0] = 0;
 
-        aCoefficient = b.valueAt(Complex.ONE).real;
+        aCoefficient = b.valueAt(ComplexFactory.FACTORY.getOne()).real;
 
         fairWeights = new double[(int) (sigma * SIGMAS) + systemOrder.steps];
         fairWeights[systemOrder.steps] = 1;
