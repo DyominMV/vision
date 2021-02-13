@@ -3,6 +3,7 @@ package dyomin.mikhail.vision.images;
 import dyomin.mikhail.vision.vectors.Vector;
 
 import java.awt.image.BufferedImage;
+import java.util.function.BiFunction;
 
 public abstract class ReadableImage<V extends Vector<V>> {
 
@@ -51,4 +52,21 @@ public abstract class ReadableImage<V extends Vector<V>> {
         return (getHeight() - 1.0) / 2;
     }
 
+    public <W extends Vector<W>, U extends Vector<U>> EditableImage<W> zipWith(
+            ReadableImage<U> other,
+            BiFunction<V, U, W> zipper
+    ) {
+        EditableImage<W> result = new MatrixImage<>(
+                Math.max(this.getWidth(), other.getWidth()),
+                Math.max(this.getHeight(), other.getHeight())
+        );
+
+        for (int x = 0; x < result.getWidth(); x++) {
+            for (int y = 0; y < result.getHeight(); y++) {
+                result.setPixel(x, y, zipper.apply(this.getPixel(x, y), other.getPixel(x, y)));
+            }
+        }
+
+        return result;
+    }
 }

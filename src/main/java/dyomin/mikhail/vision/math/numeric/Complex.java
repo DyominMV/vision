@@ -52,14 +52,19 @@ public class Complex implements Numeric<Complex> {
     }
 
     public double argument() {
-        if (Double.MIN_NORMAL > real){
+        if (Double.MIN_NORMAL > real) {
             return 0;
         }
 
         return Math.atan2(imaginary, real);
     }
 
-    public static Complex ofModulusAndArgument(double modulus, double argument){
-        return new Complex(modulus * Math.cos(argument), modulus*Math.sin(argument));
+    public static Complex ofModulusAndArgument(double modulus, double argument) {
+        return new Complex(modulus * Math.cos(argument), modulus * Math.sin(argument));
+    }
+
+    @Override
+    public String toString() {
+        return "(" + real +" + " + imaginary + "i)";
     }
 }

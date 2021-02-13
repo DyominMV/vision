@@ -49,9 +49,10 @@ public class Vision extends Application {
     private final PseudoGaussianBlur<RGB> pgb =
             new PseudoGaussianBlur<>(10, SystemOrder.THREE);
 
-    private final RadialDistortion<RGB> distortion = new RadialDistortion<>(320, 240,
-            0.000001,
-            0.00000000001
+    private final RadialDistortion<RGB> distortion = new RadialDistortion<>(320, 240, 320,
+            0.1,
+            0.1,
+            0.1
     );
 
     private final RadialDistortion<RGB> undistortion = distortion.inverseDistortion();
@@ -62,7 +63,7 @@ public class Vision extends Application {
                         distortion,
                         undistortion
                 ));
-        return result;
+        return result.zipWith(rawImage, (a,b)->a.minus(b).amplify(100));
     }
 
     public void grabAndHandleImage() {

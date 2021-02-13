@@ -27,8 +27,13 @@ public interface PowerSeries<N extends Numeric<N>, PS extends PowerSeries<N, PS>
 
     Stream<N> getCoefficients();
 
+    N nthCoefficient(int n);
+
     PS plus(PS other);
 
     PS minus(PS other);
 
+    PS multiply(PS other);
+
+    PS substitute(PS other);
 }

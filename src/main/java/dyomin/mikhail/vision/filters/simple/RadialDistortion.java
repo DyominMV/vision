@@ -6,25 +6,27 @@ import dyomin.mikhail.vision.vectors.Vector;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 public class RadialDistortion<V extends Vector<V>> extends Distortion<V> {
-    private static final int INVERSE_DISTORTION_COEFFICIENT_GROUPS = 3;
+    private static final int INVERSE_DISTORTION_COEFFICIENTS = 20;
 
     private final DoublePowerSeries distortionCoefficients;
     private final double centerX;
     private final double centerY;
+    private final double scale;
 
-    private RadialDistortion(double centerX, double centerY, DoublePowerSeries distortionCoefficients) {
+    private RadialDistortion(double centerX, double centerY, double scale, DoublePowerSeries distortionCoefficients) {
         this.centerX = centerX;
         this.centerY = centerY;
+        this.scale = scale;
         this.distortionCoefficients = distortionCoefficients;
     }
 
-    public RadialDistortion(double centerX, double centerY, double... coefficients) {
+    public RadialDistortion(double centerX, double centerY, double scale, double... coefficients) {
         this(
                 centerX,
                 centerY,
+                scale,
                 new DoublePowerSeries(
                         Arrays.stream(coefficients)
                                 .flatMap(d -> DoubleStream.of(0, d))
@@ -39,7 +41,7 @@ public class RadialDistortion<V extends Vector<V>> extends Distortion<V> {
     protected Direction distort(double x, double y) {
         double dx = x - centerX;
         double dy = y - centerY;
-        double r = Math.sqrt(dx * dx + dy * dy);
+        double r = Math.sqrt(dx * dx + dy * dy)/scale;
         double rCoefficient = distortionCoefficients.valueAt(r);
 
         return new Direction(
@@ -49,10 +51,9 @@ public class RadialDistortion<V extends Vector<V>> extends Distortion<V> {
     }
 
     public RadialDistortion<V> inverseDistortion() {
-        return new RadialDistortion<>(centerX, centerY,
-                distortionCoefficients.moveRight().compInverse((int)
-                        distortionCoefficients.getDoubleCoefficients().count() *
-                        INVERSE_DISTORTION_COEFFICIENT_GROUPS
+        return new RadialDistortion<>(centerX, centerY, scale,
+                distortionCoefficients.moveRight().optimalCompInverse(1,
+                        INVERSE_DISTORTION_COEFFICIENTS
                 ).moveLeft()
         );
     }

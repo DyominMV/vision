@@ -24,9 +24,11 @@ public class NumericDouble implements Numeric<NumericDouble> {
 
     @Override
     public NumericDouble invert() {
-        return new NumericDouble(1/value);
+        return new NumericDouble(1 / value);
     }
 
-    public static final NumericDouble ZERO = new NumericDouble(0);
-    public static final NumericDouble ONE = new NumericDouble(1);
+    @Override
+    public String toString() {
+        return "(" + value + ")";
+    }
 }

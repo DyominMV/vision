@@ -61,24 +61,6 @@ public abstract class EditableImage<V extends Vector<V>> extends ReadableImage<V
         return b1;
     }
 
-    public <W extends Vector<W>, U extends Vector<U>> EditableImage<W> zipWith(
-            EditableImage<U> other,
-            BiFunction<V, U, W> zipper
-    ) {
-        EditableImage<W> result = new MatrixImage<>(
-                Math.max(this.getWidth(), other.getWidth()),
-                Math.max(this.getHeight(), other.getHeight())
-        );
-
-        for (int x = 0; x < result.getWidth(); x++) {
-            for (int y = 0; y < result.getHeight(); y++) {
-                result.setPixel(x, y, zipper.apply(this.getPixel(x, y), other.getPixel(x, y)));
-            }
-        }
-
-        return result;
-    }
-
     public <U extends Vector<U>> EditableImage<U> applyFilter(ImageFilter<V, U> filter, Supplier<EditableImage<U>> bufferSupplier) {
         EditableImage<U> buffer = bufferSupplier.get();
         filter.filter(this, buffer);

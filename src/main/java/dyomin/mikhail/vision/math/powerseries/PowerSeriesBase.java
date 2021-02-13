@@ -4,10 +4,7 @@ import dyomin.mikhail.vision.math.numeric.Numeric;
 import dyomin.mikhail.vision.math.numeric.factory.NumericFactory;
 import dyomin.mikhail.vision.math.powerseries.util.CompositionGenerator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -171,6 +168,13 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, PS extends PowerSeri
     }
 
     @Override
+    public N nthCoefficient(int n) {
+        return n < coefficients.size()
+                ? coefficients.get(n)
+                : numerics.getZero();
+    }
+
+    @Override
     public PS plus(PS other) {
         int i = 0;
         List<N> result = new ArrayList<>();
@@ -193,5 +197,52 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, PS extends PowerSeri
     @Override
     public PS minus(PS other) {
         return plus(other.negate());
+    }
+
+    @Override
+    public PS multiply(PS other) {
+        if (0 == other.coefficients.size()) {
+            return other;
+        }
+
+        if (0 == this.coefficients.size()) {
+            return buildFromCoefficients(Collections.emptyList());
+        }
+
+        int resultPower = this.coefficients.size() + other.coefficients.size() - 1;
+        List<N> result = new ArrayList<>(resultPower);
+
+        for (int n = 0; n < resultPower; n++) {
+            N sum = numerics.getZero();
+
+            for (int i = 0; i <= n; i++) {
+                sum = sum.plus(this.nthCoefficient(i).multiply(other.nthCoefficient(n - i)));
+            }
+
+            result.add(sum);
+        }
+
+        return buildFromCoefficients(result);
+    }
+
+    @Override
+    public PS substitute(PS other) {
+        PS sum = buildFromCoefficients(Collections.emptyList());
+
+        ListIterator<N> coefficientIterator = coefficients.listIterator(coefficients.size());
+        while (coefficientIterator.hasPrevious()) {
+            sum = sum.multiply(other).plus(
+                    buildFromCoefficients(Collections.singletonList(coefficientIterator.previous()))
+            );
+        }
+
+        return sum;
+    }
+
+    @Override
+    public String toString() {
+        return IntStream.range(0, coefficients.size()).mapToObj(i ->
+                coefficients.get(i).toString() + "x^" + i + "+"
+        ).reduce((a, b) -> a + b).orElse("") + "0";
     }
 }
