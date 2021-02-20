@@ -23,6 +23,8 @@ public interface PowerSeries<N extends Numeric<N>, PS extends PowerSeries<N, PS>
 
     PS integrate(N constant);
 
+    PS trim(int newPower);
+
     PS multiply(N coefficient);
 
     Stream<N> getCoefficients();

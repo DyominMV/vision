@@ -40,16 +40,16 @@ public class TangentialDistortion<V extends Vector<V>> extends Distortion<V> {
     protected Direction distort(double x, double y) {
         double dx = x - centerX;
         double dy = y - centerY;
-        double rSquared = dx * dx + dy * dy;
-        double rCoefficient = radialPartCoefficients.valueAt(rSquared);
+        double r = Math.sqrt(dx * dx + dy * dy);
+        double rCoefficient = radialPartCoefficients.valueAt(r);
 
         return new Direction(
                 dx + rCoefficient * (
-                        tangentialCoefficient2 * (rSquared + 2 * dx * dx) +
+                        tangentialCoefficient2 * (r*r + 2 * dx * dx) +
                                 tangentialCoefficient1 * 2 * dx * dy
                 ) + centerX,
                 dy + rCoefficient * (
-                        tangentialCoefficient1 * (rSquared + 2 * dy * dy) +
+                        tangentialCoefficient1 * (r*r + 2 * dy * dy) +
                                 tangentialCoefficient2 * 2 * dx * dy
                 ) + centerY
         );

@@ -60,10 +60,10 @@ public class Vision extends Application {
     private EditableImage<RGB> handleImage(RgbImage rawImage) {
         EditableImage<RGB> result = rawImage.toMatrixImage()
                 .applyFilters(Arrays.asList(
-                        distortion,
-                        undistortion
+                        distortion//,
+                        //undistortion
                 ));
-        return result.zipWith(rawImage, (a,b)->a.minus(b).amplify(100));
+        return result;//.zipWith(rawImage, (a,b)->a.minus(b).amplify(1));
     }
 
     public void grabAndHandleImage() {

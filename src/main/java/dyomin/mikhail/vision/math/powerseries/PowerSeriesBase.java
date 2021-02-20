@@ -117,14 +117,14 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, PS extends PowerSeri
 
     @Override
     public PS toMonic() {
-        N firstCoeff = coefficients.get(0);
+        N firstCoefficient = coefficients.get(0);
 
-        if (null == firstCoeff) {
+        if (null == firstCoefficient) {
             return buildFromCoefficients(Collections.emptyList());
         }
 
         return buildFromCoefficients(coefficients.stream()
-                .map(n -> n.divide(firstCoeff))
+                .map(n -> n.divide(firstCoefficient))
                 .collect(Collectors.toList())
         );
     }
@@ -152,6 +152,11 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, PS extends PowerSeri
                 IntStream.range(0, coefficients.size())
                         .mapToObj(i -> coefficients.get(i).divide(numerics.fromInteger(i + 1)))
         ).collect(Collectors.toList()));
+    }
+
+    @Override
+    public PS trim(int newPower) {
+        return buildFromCoefficients(coefficients.stream().limit(newPower+1).collect(Collectors.toList()));
     }
 
     @Override
