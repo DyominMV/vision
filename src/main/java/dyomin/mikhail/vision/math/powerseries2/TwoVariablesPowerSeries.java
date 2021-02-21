@@ -5,7 +5,12 @@ import dyomin.mikhail.vision.math.powerseries.PowerSeries;
 
 import java.util.stream.Stream;
 
-public interface TwoVariablesPowerSeries<N extends Numeric<N>, PS extends PowerSeries<N,PS>, TVPS extends TwoVariablesPowerSeries<N, PS, TVPS>> {
+public interface TwoVariablesPowerSeries<
+        N extends Numeric<N>,
+        PS extends PowerSeries<N, N, PS>,
+        TVPS extends TwoVariablesPowerSeries<N, PS, TVPS>
+        >
+        extends PowerSeries<N, PS, TVPS> {
     N valueAt(N pointX, N pointY);
 
     TVPS moveRightX();
@@ -15,10 +20,6 @@ public interface TwoVariablesPowerSeries<N extends Numeric<N>, PS extends PowerS
     TVPS moveLeftX();
 
     TVPS moveLeftY();
-
-    TVPS negate();
-
-    TVPS toMonic();
 
     TVPS derivativeX();
 
@@ -30,17 +31,9 @@ public interface TwoVariablesPowerSeries<N extends Numeric<N>, PS extends PowerS
 
     TVPS trim(int newPowerX, int newPowerY);
 
-    TVPS multiply(N coefficient);
-
-    Stream<Stream<N>> getCoefficients();
+    Stream<Stream<N>> getNumericCoefficients();
 
     N nthCoefficient(int powerOfX, int powerOfY);
-
-    TVPS plus(TVPS other);
-
-    TVPS minus(TVPS other);
-
-    TVPS multiply(TVPS other);
 
     TVPS substitute(TVPS otherX, TVPS otherY);
 

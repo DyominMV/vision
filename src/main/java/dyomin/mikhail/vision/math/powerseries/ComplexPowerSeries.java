@@ -6,7 +6,7 @@ import dyomin.mikhail.vision.math.numeric.factory.ComplexFactory;
 import java.util.Arrays;
 import java.util.List;
 
-public class ComplexPowerSeries extends PowerSeriesBase<Complex, ComplexPowerSeries> {
+public class ComplexPowerSeries extends PowerSeriesBase<Complex, Complex, ComplexPowerSeries> {
     public ComplexPowerSeries(Complex... coefficients) {
         this(Arrays.asList(coefficients));
     }
@@ -26,5 +26,10 @@ public class ComplexPowerSeries extends PowerSeriesBase<Complex, ComplexPowerSer
     @Override
     protected ComplexPowerSeries buildFromCoefficients(List<Complex> coefficients) {
         return new ComplexPowerSeries(coefficients);
+    }
+
+    @Override
+    protected Complex getZeroCoefficient() {
+        return ComplexFactory.FACTORY.getZero();
     }
 }

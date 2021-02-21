@@ -22,11 +22,21 @@ public class Complex implements Numeric<Complex> {
     }
 
     @Override
+    public Complex minus(Complex other) {
+        return null;
+    }
+
+    @Override
     public Complex multiply(Complex other) {
         return new Complex(
                 this.real * other.real - this.imaginary * other.imaginary,
                 this.real * other.imaginary + this.imaginary * other.real
         );
+    }
+
+    @Override
+    public Complex multiplyByNumeric(Complex numeric) {
+        return multiply(numeric);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, DoublePowerSeries> {
+public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDouble, DoublePowerSeries> {
     public DoublePowerSeries(double... coefficients) {
         this(Arrays.stream(coefficients).mapToObj(NumericDouble::new).collect(Collectors.toList()));
     }
@@ -20,17 +20,22 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, DoublePowe
         super(NumericDoubleFactory.FACTORY, coefficients);
     }
 
-    public static DoublePowerSeries withRoots(Double[] roots) {
+    public static DoublePowerSeries withRoots(double[] roots) {
         return PowerSeriesBase.withRoots(
                 DoublePowerSeries::new,
                 NumericDoubleFactory.FACTORY,
-                Arrays.stream(roots).map(NumericDouble::new).toArray(NumericDouble[]::new)
+                Arrays.stream(roots).mapToObj(NumericDouble::new).toArray(NumericDouble[]::new)
         );
     }
 
     @Override
     protected DoublePowerSeries buildFromCoefficients(List<NumericDouble> coefficients) {
         return new DoublePowerSeries(coefficients);
+    }
+
+    @Override
+    protected NumericDouble getZeroCoefficient() {
+        return NumericDoubleFactory.FACTORY.getZero();
     }
 
     public DoubleStream getDoubleCoefficients() {
@@ -72,7 +77,7 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, DoublePowe
         for (int i = 0; i < resultPower; i++) {
             DoublePowerSeries integral = powersOfThis.get(i)
                     .moveRight()
-                    .multiply(numerics.fromInteger(-2))
+                    .multiplyByCoefficient(numerics.fromInteger(-2))
                     .integrate(numerics.getZero());
             double v1 = integral.valueAt(integrationLimit);
             double v2 = integral.valueAt(-integrationLimit);
@@ -81,18 +86,18 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, DoublePowe
 
         Matrix grad = new Matrix(new double[][]{gradientAtZero}).transpose();
 
-        double[] hessianValues = powersOfThis.stream().mapToDouble(series-> {
+        double[] hessianValues = powersOfThis.stream().mapToDouble(series -> {
             DoublePowerSeries integral = series
-                    .multiply(numerics.fromInteger(2))
+                    .multiplyByCoefficient(numerics.fromInteger(2))
                     .integrate(numerics.getZero());
-            return  integral.valueAt(integrationLimit) - integral.valueAt(-integrationLimit);
+            return integral.valueAt(integrationLimit) - integral.valueAt(-integrationLimit);
         }).toArray();
 
         Matrix hessian = new Matrix(resultPower, resultPower);
 
         for (int row = 0; row < resultPower; row++) {
             for (int col = 0; col < resultPower; col++) {
-                hessian.set(row, col, hessianValues[row+col+1]);
+                hessian.set(row, col, hessianValues[row + col + 1]);
             }
         }
 

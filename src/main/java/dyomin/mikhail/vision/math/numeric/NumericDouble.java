@@ -18,6 +18,11 @@ public class NumericDouble implements Numeric<NumericDouble> {
     }
 
     @Override
+    public NumericDouble multiplyByNumeric(NumericDouble numeric) {
+        return multiply(numeric);
+    }
+
+    @Override
     public NumericDouble negate() {
         return new NumericDouble(-value);
     }
