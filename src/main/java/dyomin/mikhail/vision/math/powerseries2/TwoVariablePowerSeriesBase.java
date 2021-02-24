@@ -25,7 +25,7 @@ public abstract class TwoVariablePowerSeriesBase<
 
     @Override
     public N valueAt(N pointX, N pointY) {
-        return valueAt(pointY).valueAt(pointX);
+        return valueAt(pointX).valueAt(pointY);
     }
 
     @Override
@@ -119,7 +119,7 @@ public abstract class TwoVariablePowerSeriesBase<
         TVPS copyOfThis = buildFromCoefficients(coefficients);
 
         List<N> seriesCoefficients = powerSeries.getCoefficients().collect(Collectors.toList());
-        ListIterator<N> coefficientIterator = seriesCoefficients.listIterator(coefficients.size());
+        ListIterator<N> coefficientIterator = seriesCoefficients.listIterator(seriesCoefficients.size());
         while (coefficientIterator.hasPrevious()) {
             sum = sum.multiply(copyOfThis).plus(
                     buildFromCoefficients(

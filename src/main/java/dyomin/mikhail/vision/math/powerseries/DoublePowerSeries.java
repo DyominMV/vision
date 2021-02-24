@@ -72,7 +72,7 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
             thisRaisedToI = thisRaisedToI.multiply(this);
         }
 
-        double[] gradientAtZero = new double[resultPower];
+        double[] gradientVector = new double[resultPower];
 
         for (int i = 0; i < resultPower; i++) {
             DoublePowerSeries integral = powersOfThis.get(i)
@@ -81,10 +81,10 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
                     .integrate(numerics.getZero());
             double v1 = integral.valueAt(integrationLimit);
             double v2 = integral.valueAt(-integrationLimit);
-            gradientAtZero[i] = v1 - v2;
+            gradientVector[i] = v1 - v2;
         }
 
-        Matrix grad = new Matrix(new double[][]{gradientAtZero}).transpose();
+        Matrix grad = new Matrix(new double[][]{gradientVector});
 
         double[] hessianValues = powersOfThis.stream().mapToDouble(series -> {
             DoublePowerSeries integral = series
@@ -105,8 +105,8 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
 
         return new DoublePowerSeries(Stream.concat(
                 Stream.of(numerics.getZero()),
-                Arrays.stream(inverseHessian.times(grad).times(-1).getArray())
-                        .map(arr -> new NumericDouble(arr[0]))
+                Arrays.stream(grad.times(inverseHessian).times(-1).getArray()[0])
+                        .mapToObj(NumericDouble::new)
         ).collect(Collectors.toList()));
     }
 }

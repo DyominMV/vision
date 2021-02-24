@@ -1,4 +1,4 @@
-package dyomin.mikhail.vision.filters.simple;
+package dyomin.mikhail.vision.filters.simple.distortion;
 
 import dyomin.mikhail.vision.math.powerseries.DoublePowerSeries;
 import dyomin.mikhail.vision.vectors.Direction;

@@ -1,5 +1,6 @@
-package dyomin.mikhail.vision.filters.simple;
+package dyomin.mikhail.vision.filters.simple.distortion;
 
+import dyomin.mikhail.vision.filters.simple.SimpleImageFilter;
 import dyomin.mikhail.vision.images.MatrixImage;
 import dyomin.mikhail.vision.images.ReadableImage;
 import dyomin.mikhail.vision.vectors.Direction;

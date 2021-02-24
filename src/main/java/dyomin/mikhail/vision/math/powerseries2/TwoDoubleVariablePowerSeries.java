@@ -53,4 +53,16 @@ public class TwoDoubleVariablePowerSeries extends TwoVariablePowerSeriesBase<
         return getNumericCoefficients().map(numerics -> numerics.mapToDouble(numeric -> numeric.value));
     }
 
+    public double integral(double fromX, double toX, double fromY, double toY) {
+        DoublePowerSeries integratedByYX = new DoublePowerSeries(
+                getCoefficients().mapToDouble(ps -> {
+                            DoublePowerSeries integral = ps.integrate(new NumericDouble(0));
+                            return integral.valueAt(toY) - integral.valueAt(fromY);
+                        }
+                ).toArray()
+        ).integrate(new NumericDouble(0));
+
+        return integratedByYX.valueAt(toX) - integratedByYX.valueAt(fromX);
+    }
+
 }

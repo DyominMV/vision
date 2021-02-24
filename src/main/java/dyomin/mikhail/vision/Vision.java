@@ -1,16 +1,12 @@
 package dyomin.mikhail.vision;
 
 import com.github.sarxos.webcam.Webcam;
-import dyomin.mikhail.vision.filters.gauss.PseudoGaussianBlur;
-import dyomin.mikhail.vision.filters.gauss.SystemOrder;
-import dyomin.mikhail.vision.filters.simple.Amplifier;
-import dyomin.mikhail.vision.filters.simple.Distortion;
-import dyomin.mikhail.vision.filters.simple.RadialDistortion;
-import dyomin.mikhail.vision.filters.simple.TangentialDistortion;
-import dyomin.mikhail.vision.vectors.Direction;
-import dyomin.mikhail.vision.vectors.RGB;
-import dyomin.mikhail.vision.images.RgbImage;
+import dyomin.mikhail.vision.filters.simple.distortion.BrownConradyDistortion;
+import dyomin.mikhail.vision.filters.simple.distortion.Distortion;
+import dyomin.mikhail.vision.filters.simple.distortion.PowerSeriesBasedDistortion;
 import dyomin.mikhail.vision.images.EditableImage;
+import dyomin.mikhail.vision.images.RgbImage;
+import dyomin.mikhail.vision.vectors.RGB;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
@@ -46,24 +42,24 @@ public class Vision extends Application {
         ));
     }
 
-    private final PseudoGaussianBlur<RGB> pgb =
-            new PseudoGaussianBlur<>(10, SystemOrder.THREE);
-
-    private final RadialDistortion<RGB> distortion = new RadialDistortion<>(320, 240, 320,
-            0.1,
-            0.1,
-            0.1
+    private PowerSeriesBasedDistortion<RGB> distortion = new BrownConradyDistortion<>(
+            320, 240, 320,
+            new double[]{0.1, 0.1, 0.1},
+            0.02, 0.02,
+            new double[]{0.01, 0.01}
     );
 
-    private final RadialDistortion<RGB> undistortion = distortion.inverseDistortion();
+    private Distortion<RGB> unDistortion = Distortion.precalculated(
+            distortion.inverse().precalculate(640, 480)
+    );
 
     private EditableImage<RGB> handleImage(RgbImage rawImage) {
         EditableImage<RGB> result = rawImage.toMatrixImage()
                 .applyFilters(Arrays.asList(
-                        distortion//,
-                        //undistortion
+                        distortion,
+                        unDistortion
                 ));
-        return result;//.zipWith(rawImage, (a,b)->a.minus(b).amplify(1));
+        return result;//.zipWith(rawImage, (a, b) -> a.minus(b).amplify(1));
     }
 
     public void grabAndHandleImage() {
