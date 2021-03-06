@@ -1,4 +1,4 @@
-package dyomin.mikhail.vision;
+package dyomin.mikhail.controllers;
 
 import com.github.sarxos.webcam.Webcam;
 import dyomin.mikhail.vision.filters.simple.distortion.BrownConradyDistortion;
@@ -8,7 +8,9 @@ import dyomin.mikhail.vision.images.EditableImage;
 import dyomin.mikhail.vision.images.RgbImage;
 import dyomin.mikhail.vision.vectors.RGB;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -42,28 +44,35 @@ public class Vision extends Application {
         ));
     }
 
+    private BufferedImage toBufferedImage(Image image) {
+        return SwingFXUtils.fromFXImage(image, new BufferedImage(
+                (int) image.getWidth(), (int) image.getHeight(), BufferedImage.TYPE_3BYTE_BGR
+        ));
+    }
+
     private PowerSeriesBasedDistortion<RGB> distortion = new BrownConradyDistortion<>(
             320, 240, 320,
-            new double[]{0.1, 0.1, 0.1},
-            0.02, 0.02,
-            new double[]{0.01, 0.01}
+            new double[]{0.2,0.05},
+            0.005, 0.01,
+            new double[]{0.1}
     );
-
-    private Distortion<RGB> unDistortion = Distortion.precalculated(
-            distortion.inverse().precalculate(640, 480)
-    );
+//
+//    private Distortion<RGB> unDistortion = Distortion.precalculated(
+//            distortion.inverse().precalculate(640, 480)
+//    );
 
     private EditableImage<RGB> handleImage(RgbImage rawImage) {
         EditableImage<RGB> result = rawImage.toMatrixImage()
                 .applyFilters(Arrays.asList(
-                        distortion,
-                        unDistortion
+                        distortion
                 ));
-        return result;//.zipWith(rawImage, (a, b) -> a.minus(b).amplify(1));
+        return result;//.zipWith(rawImage, RGB::minus);
     }
 
     public void grabAndHandleImage() {
         BufferedImage rawImage = webcam.getImage();
+
+
         standardView.setImage(fromBufferedImage(rawImage));
         modifiedView.setImage(fromBufferedImage(handleImage(new RgbImage(rawImage)).visualize()));
     }
@@ -86,5 +95,17 @@ public class Vision extends Application {
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+    }
+
+    @FXML
+    public void initialize() {
+        modifiedView.setImage(
+                fromBufferedImage(
+                        handleImage(
+                                new RgbImage(toBufferedImage(new Image("check.png")))
+                        )
+                                .visualize()
+                )
+        );
     }
 }

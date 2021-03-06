@@ -4,8 +4,16 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="224.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dyomin.mikhail.vision.Vision">
-    <Button onAction="#grabAndHandleImage" prefHeight="480.0" prefWidth="20.0" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0.0" />
-   <ImageView fx:id="standardView" fitHeight="480.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-   <ImageView fx:id="modifiedView" fitHeight="480.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="640.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
+<AnchorPane prefHeight="224.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="dyomin.mikhail.controllers.Vision">
+    <Button onAction="#grabAndHandleImage" prefHeight="480.0" prefWidth="20.0" AnchorPane.bottomAnchor="0"
+            AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0.0"/>
+    <ImageView fx:id="standardView" fitHeight="480.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Image url="@check.png"/>
+    </ImageView>
+    <ImageView fx:id="modifiedView" fitHeight="480.0" fitWidth="640.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="640.0" AnchorPane.rightAnchor="20.0"
+               AnchorPane.topAnchor="0.0">
+    </ImageView>
 </AnchorPane>

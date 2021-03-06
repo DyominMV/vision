@@ -1,9 +1,15 @@
 package dyomin.mikhail.vision.images;
 
+import dyomin.mikhail.vision.filters.ImageFilter;
 import dyomin.mikhail.vision.vectors.Vector;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public abstract class ReadableImage<V extends Vector<V>> {
 
@@ -68,5 +74,51 @@ public abstract class ReadableImage<V extends Vector<V>> {
         }
 
         return result;
+    }
+
+    public <U extends Vector<U>> EditableImage<U> applyFilter(ImageFilter<V, U> filter) {
+        EditableImage<U> buffer = new MatrixImage<>(this.getWidth(), this.getHeight());
+        filter.filter(this, buffer);
+        return buffer;
+    }
+
+    public <U extends Vector<U>> EditableImage<U> applyFilter(ImageFilter<V, U> filter, Supplier<EditableImage<U>> bufferSupplier) {
+        EditableImage<U> buffer = bufferSupplier.get();
+        filter.filter(this, buffer);
+        return buffer;
+    }
+
+    public EditableImage<V> applyFilters(List<ImageFilter<V, V>> filters) {
+        EditableImage<V> b1 = provideBuffer();
+
+        if (filters.isEmpty()) {
+            return b1;
+        }
+
+        EditableImage<V> b2 = provideBuffer();
+
+        filters.get(0).filter(this, b1);
+
+        for (ImageFilter<V, V> filter : filters.stream().skip(1).collect(Collectors.toList())) {
+            filter.filter(b1, b2);
+
+            EditableImage<V> temp = b1;
+            b1 = b2;
+            b2 = temp;
+        }
+
+        return b1;
+    }
+
+    public Stream<V> getColumn(int x){
+        return IntStream.range(0, getHeight()).mapToObj(
+                y-> getPixel(x, y)
+        );
+    }
+
+    public Stream<V> getRow(int y){
+        return IntStream.range(0, getWidth()).mapToObj(
+                x-> getPixel(x, y)
+        );
     }
 }

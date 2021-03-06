@@ -34,8 +34,15 @@ public class Direction implements Vector<Direction> {
         return Math.sqrt(this.product(this));
     }
 
+    public double angle() {
+        double angle = Math.atan2(y, x);
+        return angle < 0
+                ? angle + 2 * Math.PI
+                : angle;
+    }
+
     @Override
     public RGB visualize() {
-        return new RGB(x,y,0);
+        return new RGB(x, y, 0);
     }
 }

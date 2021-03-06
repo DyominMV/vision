@@ -5,8 +5,10 @@ import dyomin.mikhail.vision.math.powerseries2.TwoDoubleVariablePowerSeriesInver
 import dyomin.mikhail.vision.vectors.Direction;
 import dyomin.mikhail.vision.vectors.Vector;
 
-public class PowerSeriesBasedDistortion<V extends Vector<V>> extends Distortion<V> {
-    private static final int INVERSE_DISTORTION_COEFFICIENTS = 13;
+import java.io.Serializable;
+
+public class PowerSeriesBasedDistortion<V extends Vector<V>> extends Distortion<V> implements Serializable {
+    private static final int INVERSE_DISTORTION_COEFFICIENTS = 14;
 
     public final double centerX;
     public final double centerY;
