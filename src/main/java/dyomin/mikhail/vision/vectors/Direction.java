@@ -25,13 +25,8 @@ public class Direction implements Vector<Direction> {
     }
 
     @Override
-    public double product(Direction other) {
-        return this.x * other.x + this.y * other.y;
-    }
-
-    @Override
     public double length() {
-        return Math.sqrt(this.product(this));
+        return Math.sqrt(x * x + y * y);
     }
 
     public double angle() {
@@ -44,5 +39,9 @@ public class Direction implements Vector<Direction> {
     @Override
     public RGB visualize() {
         return new RGB(x, y, 0);
+    }
+
+    public static Direction ofLengthAndAngle(double length, double angle) {
+        return new Direction(length * Math.cos(angle), length * Math.sin(angle));
     }
 }

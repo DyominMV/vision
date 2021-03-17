@@ -7,7 +7,7 @@ import dyomin.mikhail.vision.vectors.Vector;
 
 import java.util.List;
 
-public class AssignmentBasedStereo<V extends Vector<V>> extends DsiBasedDisparityMap<V> {
+public class AssignmentBasedStereo<V extends Vector<V>> extends DsiBasedStereo<V> {
     public <U extends Vector<U>> AssignmentBasedStereo(
             ImageFilter<U, V> filter,
             ReadableImage<U> left,
@@ -18,6 +18,7 @@ public class AssignmentBasedStereo<V extends Vector<V>> extends DsiBasedDisparit
 
     @Override
     protected List<Disparity> getDisparities(List<V> leftSideRow, List<V> rightSideRow) {
+        //TODO add solving
         return null;
     }
 }

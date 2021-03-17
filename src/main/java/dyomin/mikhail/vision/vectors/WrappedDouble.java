@@ -29,11 +29,6 @@ public class WrappedDouble implements Vector<WrappedDouble> {
     }
 
     @Override
-    public double product(WrappedDouble other) {
-        return this.value * other.value;
-    }
-
-    @Override
     public double length() {
         return Math.abs(this.value);
     }

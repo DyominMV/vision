@@ -7,8 +7,6 @@ public interface Vector<V extends Vector<V>> {
 
     V amplify(double coefficient);
 
-    double product(V other);
-
     double length();
 
     RGB visualize();

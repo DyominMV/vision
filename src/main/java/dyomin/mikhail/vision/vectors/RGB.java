@@ -59,13 +59,6 @@ public class RGB implements Vector<RGB> {
     }
 
     @Override
-    public double product(RGB other) {
-        return this.red * other.red +
-                this.green * other.green +
-                this.blue * other.blue;
-    }
-
-    @Override
     public RGB amplify(double coefficient) {
         return new RGB(
                 coefficient * red,
@@ -76,7 +69,9 @@ public class RGB implements Vector<RGB> {
 
     @Override
     public double length() {
-        return Math.sqrt(this.product(this));
+        return Math.sqrt(
+                red*red + green* green + blue*blue
+        );
     }
 
     public static final double MAX_LENGTH = Math.sqrt(3);

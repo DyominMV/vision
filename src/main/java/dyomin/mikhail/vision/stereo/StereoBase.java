@@ -7,11 +7,28 @@ import dyomin.mikhail.vision.vectors.Vector;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-public abstract class LeftDisparityMap<V extends Vector<V>> {
-    public final ReadableImage<Disparity> disparityMap;
+public abstract class StereoBase<V extends Vector<V>> {
+    private ReadableImage<Disparity> disparityMap;
 
-    protected LeftDisparityMap(ReadableImage<V> left, ReadableImage<V> right) {
+    private ReadableImage<V> left;
+    private ReadableImage<V> right;
+
+    public synchronized ReadableImage<Disparity> getDisparityMap() {
+        if (null != disparityMap){
+            return disparityMap;
+        }
+
         this.disparityMap = getDisparityMap(left, right);
+
+        left = null;
+        right = null;
+
+        return disparityMap;
+    }
+
+    protected StereoBase(ReadableImage<V> left, ReadableImage<V> right) {
+        this.left = left;
+        this.right = right;
     }
 
     protected abstract ReadableImage<Disparity> getDisparityMap(ReadableImage<V> left, ReadableImage<V> right);

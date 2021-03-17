@@ -11,8 +11,11 @@ import dyomin.mikhail.vision.vectors.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V> {
@@ -75,7 +78,7 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
                         .toArray(Complex[]::new)
         ).revertCoefficients();
 
-        if (systemOrder.steps % 2 != 0){
+        if (systemOrder.steps % 2 != 0) {
             b = b.negate();
         }
 
@@ -139,7 +142,7 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
         }
 
         for (int x = 0; x < length; x++) {
-            pixelSetter.accept(x, buffer.get(x+lag));
+            pixelSetter.accept(x, buffer.get(x + lag));
         }
     }
 
@@ -149,30 +152,41 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
         int width = output.getWidth();
         int height = output.getHeight();
 
-        IntStream.range(0, width).forEach(x -> {
-            filterLine(
-                    y -> image.getPixel(x, height - 1 - y),
-                    (y, v) -> output.setPixel(x, height - 1 - y, v),
-                    height
-            );
-            filterLine(
-                    y -> output.getPixel(x, y),
-                    (y, v) -> output.setPixel(x, y, v),
-                    height
-            );
-        });
+        List<CompletableFuture<Void>> futures =
+                IntStream.range(0, width).mapToObj(x ->
+                        CompletableFuture.runAsync(() -> {
+                            filterLine(
+                                    y -> image.getPixel(x, height - 1 - y),
+                                    (y, v) -> output.setPixel(x, height - 1 - y, v),
+                                    height
+                            );
+                            filterLine(
+                                    y -> output.getPixel(x, y),
+                                    (y, v) -> output.setPixel(x, y, v),
+                                    height
+                            );
+                        })
+                ).collect(Collectors.toList());
 
-        IntStream.range(0, height).forEach(y -> {
-            filterLine(
-                    x -> output.getPixel(x, y),
-                    (x, v) -> output.setPixel(x, y, v),
-                    width
-            );
-            filterLine(
-                    x -> output.getPixel(width - 1 - x, y),
-                    (x, v) -> output.setPixel(width - 1 - x, y, v),
-                    width
-            );
-        });
+        futures.forEach(CompletableFuture::join);
+
+        futures =
+                IntStream.range(0, height).mapToObj(y ->
+                        CompletableFuture.runAsync(() ->
+                        {
+                            filterLine(
+                                    x -> output.getPixel(x, y),
+                                    (x, v) -> output.setPixel(x, y, v),
+                                    width
+                            );
+                            filterLine(
+                                    x -> output.getPixel(width - 1 - x, y),
+                                    (x, v) -> output.setPixel(width - 1 - x, y, v),
+                                    width
+                            );
+                        })
+                ).collect(Collectors.toList());
+
+        futures.forEach(CompletableFuture::join);
     }
 }

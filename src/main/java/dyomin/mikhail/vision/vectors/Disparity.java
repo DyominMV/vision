@@ -31,11 +31,6 @@ public class Disparity implements Vector<Disparity> {
     }
 
     @Override
-    public double product(Disparity other) {
-        return this.value * other.value;
-    }
-
-    @Override
     public double length() {
         return this.value;
     }
