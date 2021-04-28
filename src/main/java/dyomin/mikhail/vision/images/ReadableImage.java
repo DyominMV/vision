@@ -1,9 +1,12 @@
 package dyomin.mikhail.vision.images;
 
 import dyomin.mikhail.vision.filters.ImageFilter;
+import dyomin.mikhail.vision.filters.Integrator;
+import dyomin.mikhail.vision.filters.simple.BoxBlur;
 import dyomin.mikhail.vision.vectors.Vector;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -12,6 +15,24 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class ReadableImage<V extends Vector<V>> {
+
+    public ReadableImage<V> scale(double coefficient) {
+        EditableImage<V> result = new MatrixImage<>(
+                (int) (this.getWidth() * coefficient),
+                (int) (this.getHeight() * coefficient)
+        );
+
+        IntStream.range(0, result.getWidth()).forEach(x ->
+                IntStream.range(0, result.getHeight()).forEach(y ->
+                        result.setPixel(
+                                x, y,
+                                this.getSubpixel(((double) x) / coefficient, ((double) y) / coefficient)
+                        )
+                )
+        );
+
+        return result;
+    }
 
     public abstract BufferedImage visualize();
 
@@ -110,15 +131,27 @@ public abstract class ReadableImage<V extends Vector<V>> {
         return b1;
     }
 
-    public Stream<V> getColumn(int x){
+    public Stream<V> getColumn(int x) {
         return IntStream.range(0, getHeight()).mapToObj(
-                y-> getPixel(x, y)
+                y -> getPixel(x, y)
         );
     }
 
-    public Stream<V> getRow(int y){
+    public Stream<V> getRow(int y) {
         return IntStream.range(0, getWidth()).mapToObj(
-                x-> getPixel(x, y)
+                x -> getPixel(x, y)
         );
+    }
+
+    public RgbImage toRgbImage() {
+        RgbImage result = new RgbImage(this.getWidth(), this.getHeight());
+
+        for (int x = 0; x < this.getWidth(); x++) {
+            for (int y = 0; y < this.getHeight(); y++) {
+                result.setPixel(x, y, this.getPixel(x, y).visualize());
+            }
+        }
+
+        return result;
     }
 }

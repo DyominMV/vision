@@ -44,4 +44,18 @@ public class Direction implements Vector<Direction> {
     public static Direction ofLengthAndAngle(double length, double angle) {
         return new Direction(length * Math.cos(angle), length * Math.sin(angle));
     }
+
+    public Direction normalize() {
+        return this.length() <= Double.MIN_NORMAL
+                ? new Direction(0, 0)
+                : new Direction(x / this.length(), y / this.length());
+    }
+
+    public Direction rotate(double angle){
+        return Direction.ofLengthAndAngle(this.length(), this.angle() + angle);
+    }
+
+    public Direction setLength(double length){
+        return Direction.ofLengthAndAngle(length, this.angle());
+    }
 }

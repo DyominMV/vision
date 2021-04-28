@@ -152,41 +152,30 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
         int width = output.getWidth();
         int height = output.getHeight();
 
-        List<CompletableFuture<Void>> futures =
-                IntStream.range(0, width).mapToObj(x ->
-                        CompletableFuture.runAsync(() -> {
-                            filterLine(
-                                    y -> image.getPixel(x, height - 1 - y),
-                                    (y, v) -> output.setPixel(x, height - 1 - y, v),
-                                    height
-                            );
-                            filterLine(
-                                    y -> output.getPixel(x, y),
-                                    (y, v) -> output.setPixel(x, y, v),
-                                    height
-                            );
-                        })
-                ).collect(Collectors.toList());
+        IntStream.range(0, width).parallel().forEach(x -> {
+            filterLine(
+                    y -> image.getPixel(x, height - 1 - y),
+                    (y, v) -> output.setPixel(x, height - 1 - y, v),
+                    height
+            );
+            filterLine(
+                    y -> output.getPixel(x, y),
+                    (y, v) -> output.setPixel(x, y, v),
+                    height
+            );
+        });
 
-        futures.forEach(CompletableFuture::join);
-
-        futures =
-                IntStream.range(0, height).mapToObj(y ->
-                        CompletableFuture.runAsync(() ->
-                        {
-                            filterLine(
-                                    x -> output.getPixel(x, y),
-                                    (x, v) -> output.setPixel(x, y, v),
-                                    width
-                            );
-                            filterLine(
-                                    x -> output.getPixel(width - 1 - x, y),
-                                    (x, v) -> output.setPixel(width - 1 - x, y, v),
-                                    width
-                            );
-                        })
-                ).collect(Collectors.toList());
-
-        futures.forEach(CompletableFuture::join);
+        IntStream.range(0, height).parallel().forEach(y -> {
+            filterLine(
+                    x -> output.getPixel(x, y),
+                    (x, v) -> output.setPixel(x, y, v),
+                    width
+            );
+            filterLine(
+                    x -> output.getPixel(width - 1 - x, y),
+                    (x, v) -> output.setPixel(width - 1 - x, y, v),
+                    width
+            );
+        });
     }
 }

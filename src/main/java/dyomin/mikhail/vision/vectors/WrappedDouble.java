@@ -3,7 +3,7 @@ package dyomin.mikhail.vision.vectors;
 public class WrappedDouble implements Vector<WrappedDouble> {
     public final double value;
 
-    private static final double VISUALISING_COEFFICIENT = 100;
+    private static final double VISUALISING_COEFFICIENT = 1;
 
     public WrappedDouble(double value) {
         this.value = value;

@@ -61,18 +61,6 @@ public class RgbImage extends EditableImage<RGB> {
         return result;
     }
 
-    public static <V extends Vector<V>> RgbImage fromSpecialImage(ReadableImage<V> editableImage) {
-        RgbImage result = new RgbImage(editableImage.getWidth(), editableImage.getHeight());
-
-        for (int x = 0; x < editableImage.getWidth(); x++) {
-            for (int y = 0; y < editableImage.getHeight(); y++) {
-                result.setPixel(x, y, editableImage.getPixel(x, y).visualize());
-            }
-        }
-
-        return result;
-    }
-
     public static RgbImage loadFromFile(File file) throws IOException {
         return new RgbImage(ImageIO.read(file));
     }
