@@ -14,7 +14,7 @@ public class PackOfVectors<V extends Vector<V>> implements Vector<PackOfVectors<
         this.vectors = vectors;
     }
 
-    public int size(){
+    public int size() {
         return this.vectors.size();
     }
 

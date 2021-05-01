@@ -10,8 +10,8 @@ public class HungarianSolver implements DsiSolver {
     @Override
     public int[] findWay(double[][] map) {
         return Arrays.stream(new HungarianAlgorithm(map).findOptimalAssignment())
-                .sorted(Comparator.comparingInt(pair->pair[0]))
-                .mapToInt(pair-> pair[1])
+                .sorted(Comparator.comparingInt(pair->pair[1]))
+                .mapToInt(pair-> pair[0])
                 .toArray();
     }
 

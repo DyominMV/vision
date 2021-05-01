@@ -4,6 +4,7 @@ import dyomin.mikhail.vision.filters.ImageFilter;
 import dyomin.mikhail.vision.images.ReadableImage;
 import dyomin.mikhail.vision.vectors.Disparity;
 import dyomin.mikhail.vision.vectors.Vector;
+import dyomin.mikhail.vision.vectors.WrappedDouble;
 
 public class FilteredStereo<V extends Vector<V>, U extends Vector<U>> implements Stereo<V> {
 
@@ -18,5 +19,10 @@ public class FilteredStereo<V extends Vector<V>, U extends Vector<U>> implements
     @Override
     public ReadableImage<Disparity> getDisparityMap(ReadableImage<V> left, ReadableImage<V> right) {
         return delegate.getDisparityMap(left.applyFilter(filter), right.applyFilter(filter));
+    }
+
+    @Override
+    public ReadableImage<WrappedDouble> getDsi(ReadableImage<V> left, ReadableImage<V> right, int y) {
+        return delegate.getDsi(left.applyFilter(filter), right.applyFilter(filter), y);
     }
 }

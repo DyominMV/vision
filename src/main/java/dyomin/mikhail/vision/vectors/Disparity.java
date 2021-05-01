@@ -38,7 +38,7 @@ public class Disparity implements Vector<Disparity> {
     @Override
     public RGB visualize() {
         return isNull()
-                ? new RGB(1, -1, -1)
-                : RGB.gray(2.0 / (1+value) -1);
+                ? new RGB(-1, -1, -1)
+                : RGB.gray(1 - 2.0 / (1+value/10));
     }
 }
