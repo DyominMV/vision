@@ -42,7 +42,27 @@ public abstract class ReadableImage<V extends Vector<V>> {
 
     public abstract int getHeight();
 
-    public abstract V getPixel(int x, int y);
+    protected abstract V getPixelBounded(int x, int y);
+
+    protected int normalizeX(int x) {
+        int mod = Math.abs(x) % (2 * getWidth());
+
+        return mod >= getWidth() ?
+                2 * getWidth() - mod - 1 :
+                mod;
+    }
+
+    protected int normalizeY(int y) {
+        int mod = Math.abs(y) % (2 * getHeight());
+
+        return mod >= getHeight() ?
+                2 * getHeight() - mod - 1 :
+                mod;
+    }
+
+    public V getPixel(int x, int y) {
+        return getPixelBounded(normalizeX(x), normalizeY(y));
+    }
 
     /**
      * gets vector value via interpolation

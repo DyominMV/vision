@@ -49,9 +49,11 @@ public class DsiFactory<V extends Vector<V>> {
             }
 
             @Override
-            public WrappedDouble getPixel(int x, int y) {
+            protected WrappedDouble getPixelBounded(int x, int y) {
                 return new WrappedDouble(metric.applyAsDouble(left.get(x), right.get(y)));
             }
+
+
         };
     }
 }
