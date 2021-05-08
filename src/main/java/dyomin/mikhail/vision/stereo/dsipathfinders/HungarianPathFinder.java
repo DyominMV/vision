@@ -1,17 +1,35 @@
-package dyomin.mikhail.vision.math.dsisolvers;
+package dyomin.mikhail.vision.stereo.dsipathfinders;
+
+import dyomin.mikhail.vision.images.ReadableImage;
+import dyomin.mikhail.vision.vectors.WrappedDouble;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
-public class HungarianSolver implements DsiSolver {
+public class HungarianPathFinder implements PathFinder {
+
+    private double[][] calculateDsi(ReadableImage<WrappedDouble> dsi) {
+        double[][] result = Stream.generate(() -> new double[dsi.getHeight()])
+                .limit(dsi.getWidth())
+                .toArray(double[][]::new);
+
+        for (int l = 0; l < result.length; l++) {
+            for (int r = 0; r < result[l].length; r++) {
+                result[l][r] = dsi.getPixel(l, r).value;
+            }
+        }
+
+        return result;
+    }
 
     @Override
-    public int[] findWay(double[][] map) {
-        return Arrays.stream(new HungarianAlgorithm(map).findOptimalAssignment())
-                .sorted(Comparator.comparingInt(pair->pair[1]))
-                .mapToInt(pair-> pair[0])
+    public int[] findPath(ReadableImage<WrappedDouble> dsi) {
+        return Arrays.stream(new HungarianAlgorithm(calculateDsi(dsi)).findOptimalAssignment())
+                .sorted(Comparator.comparingInt(pair -> pair[1]))
+                .mapToInt(pair -> pair[0])
                 .toArray();
     }
 
