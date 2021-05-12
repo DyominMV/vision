@@ -1,10 +1,12 @@
 package dyomin.mikhail.vision.filters.simple;
 
 import dyomin.mikhail.vision.filters.ImageFilter;
+import dyomin.mikhail.vision.filters.simple.detector.Detector;
 import dyomin.mikhail.vision.images.EditableImage;
 import dyomin.mikhail.vision.images.ReadableImage;
 import dyomin.mikhail.vision.vectors.Vector;
 
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public interface SimpleImageFilter<V extends Vector<V>, U extends Vector<U>> extends ImageFilter<V, U> {
@@ -18,5 +20,9 @@ public interface SimpleImageFilter<V extends Vector<V>, U extends Vector<U>> ext
                     }
                 }
         );
+    }
+
+    default Detector<V> detecting(Predicate<U> detector){
+        return (x, y, image) -> detector.test(SimpleImageFilter.this.filter(x,y,image));
     }
 }

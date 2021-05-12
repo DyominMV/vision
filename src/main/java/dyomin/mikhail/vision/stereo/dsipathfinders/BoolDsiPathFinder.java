@@ -3,12 +3,12 @@ package dyomin.mikhail.vision.stereo.dsipathfinders;
 import dyomin.mikhail.vision.images.ReadableImage;
 import dyomin.mikhail.vision.images.RgbImage;
 import dyomin.mikhail.vision.vectors.RGB;
-import dyomin.mikhail.vision.vectors.WrappedDouble;
+import dyomin.mikhail.vision.vectors.WrappedBoolean;
 
-public interface PathFinder {
-    int[] findPath(ReadableImage<WrappedDouble> dsi);
+public interface BoolDsiPathFinder {
+    int[] findPath(ReadableImage<WrappedBoolean> dsi);
 
-    default RgbImage visualizePath(ReadableImage<WrappedDouble> dsi){
+    default RgbImage visualizePath(ReadableImage<WrappedBoolean> dsi){
         RgbImage result = dsi.toRgbImage();
 
         int[] path = findPath(dsi);

@@ -2,7 +2,7 @@ package dyomin.mikhail.vision.vectors;
 
 public class WrappedBoolean implements Vector<WrappedBoolean> {
 
-    private final boolean value;
+    public final boolean value;
 
     public WrappedBoolean(boolean value) {
         this.value = value;
