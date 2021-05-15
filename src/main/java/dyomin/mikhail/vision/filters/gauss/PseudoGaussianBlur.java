@@ -78,10 +78,6 @@ public class PseudoGaussianBlur<V extends Vector<V>> implements ImageFilter<V, V
                         .toArray(Complex[]::new)
         ).revertCoefficients();
 
-        if (systemOrder.steps % 2 != 0) {
-            b = b.negate();
-        }
-
         bCoefficients = b.getCoefficients().mapToDouble(c -> c.real).toArray();
         bCoefficients[0] = 0;
 

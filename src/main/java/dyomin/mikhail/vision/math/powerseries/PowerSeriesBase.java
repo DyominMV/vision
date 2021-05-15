@@ -27,17 +27,53 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
     PS withRoots(
             Function<List<N>, PS> builderFromCoefficients,
             NumericFactory<N> numerics,
-            C[] roots
+            N[] roots
+    ) {
+        return withRoots(builderFromCoefficients, numerics, Arrays.asList(roots));
+    }
+
+
+    protected static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
+    PS withRoots(
+            Function<List<N>, PS> builderFromCoefficients,
+            NumericFactory<N> numerics,
+            List<N> roots
     ) {
         PS result = builderFromCoefficients.apply(
                 Collections.singletonList(numerics.getOne())
         );
 
-        for (C root : roots) {
-            result = result.multiplyByCoefficient(root).minus(result.moveRight());
+        for (N root : roots) {
+            result = result.moveRight().minus(result.multiplyByNumeric(root));
         }
 
         return result;
+    }
+
+    protected static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
+    PS ofPoints(
+            Function<List<N>, PS> builderFromCoefficients,
+            NumericFactory<N> numerics,
+            Map<N, C> points
+    ){
+        List<Map.Entry<N, C>> pts = new ArrayList<>(points.entrySet());
+
+        return IntStream.range(0, pts.size())
+                .mapToObj(i ->{
+            List<N> xsNoI = pts.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+
+            Map.Entry<N, C> ptI = pts.get(i);
+                    N xI = ptI.getKey();
+                    C yI = ptI.getValue();
+
+                    xsNoI.remove(i);
+
+                    N denominator = xsNoI.stream().map(xI::minus).reduce(N::plus).orElse(numerics.getOne());
+
+                    return withRoots(builderFromCoefficients, numerics, xsNoI).divide(denominator).multiplyByCoefficient(yI);
+                })
+                .reduce(PS::plus)
+                .orElse(builderFromCoefficients.apply(Collections.singletonList(numerics.getZero())));
     }
 
     @Override
