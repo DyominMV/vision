@@ -7,6 +7,7 @@ import dyomin.mikhail.vision.math.numeric.factory.NumericDoubleFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -25,6 +26,18 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
                 DoublePowerSeries::new,
                 NumericDoubleFactory.FACTORY,
                 Arrays.stream(roots).mapToObj(NumericDouble::new).toArray(NumericDouble[]::new)
+        );
+    }
+
+    public static DoublePowerSeries ofPoints(Map<Double, Double> points) {
+        return PowerSeriesBase.<NumericDouble, NumericDouble, DoublePowerSeries>
+                ofPoints(
+                DoublePowerSeries::new,
+                NumericDoubleFactory.FACTORY,
+                points.entrySet().stream().collect(Collectors.toMap(
+                        k -> new NumericDouble(k.getKey()),
+                        k -> new NumericDouble(k.getValue())
+                ))
         );
     }
 
