@@ -1,7 +1,7 @@
 package dyomin.mikhail.vision.math.powerseries2;
 
 import dyomin.mikhail.vision.math.numeric.NumericDouble;
-import dyomin.mikhail.vision.math.numeric.factory.NumericDoubleFactory;
+import dyomin.mikhail.vision.math.numeric.factory.DoubleFactory;
 import dyomin.mikhail.vision.math.powerseries.DoublePowerSeries;
 
 import java.util.Arrays;
@@ -11,6 +11,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 public class TwoDoubleVariablePowerSeries extends TwoVariablePowerSeriesBase<
+        NumericDouble,
         NumericDouble,
         DoublePowerSeries,
         TwoDoubleVariablePowerSeries
@@ -27,7 +28,7 @@ public class TwoDoubleVariablePowerSeries extends TwoVariablePowerSeriesBase<
     }
 
     private TwoDoubleVariablePowerSeries(List<DoublePowerSeries> listOfSeries, int any) {
-        super(NumericDoubleFactory.FACTORY, listOfSeries);
+        super(DoubleFactory.FACTORY, DoubleFactory.FACTORY, DoublePowerSeries::new, listOfSeries);
     }
 
     @Override
@@ -35,22 +36,12 @@ public class TwoDoubleVariablePowerSeries extends TwoVariablePowerSeriesBase<
         return new TwoDoubleVariablePowerSeries(coefficients, 0);
     }
 
-    @Override
-    protected DoublePowerSeries getZeroCoefficient() {
-        return new DoublePowerSeries();
-    }
-
-    @Override
-    protected DoublePowerSeries buildRegularPowerSeries(List<NumericDouble> numerics) {
-        return new DoublePowerSeries(numerics);
-    }
-
     public double valueAt(double pointX, double pointY) {
         return valueAt(new NumericDouble(pointX), new NumericDouble(pointY)).value;
     }
 
     public Stream<DoubleStream> getDoubleCoefficients() {
-        return getNumericCoefficients().map(numerics -> numerics.mapToDouble(numeric -> numeric.value));
+        return getSimpleCoefficients().map(numerics -> numerics.mapToDouble(numeric -> numeric.value));
     }
 
     public double integral(double fromX, double toX, double fromY, double toY) {

@@ -2,7 +2,7 @@ package dyomin.mikhail.vision.math.powerseries;
 
 import Jama.Matrix;
 import dyomin.mikhail.vision.math.numeric.NumericDouble;
-import dyomin.mikhail.vision.math.numeric.factory.NumericDoubleFactory;
+import dyomin.mikhail.vision.math.numeric.factory.DoubleFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,13 +18,13 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
     }
 
     public DoublePowerSeries(List<NumericDouble> coefficients) {
-        super(NumericDoubleFactory.FACTORY, coefficients);
+        super(DoubleFactory.FACTORY, DoubleFactory.FACTORY, coefficients);
     }
 
     public static DoublePowerSeries withRoots(double[] roots) {
         return PowerSeriesBase.withRoots(
                 DoublePowerSeries::new,
-                NumericDoubleFactory.FACTORY,
+                DoubleFactory.FACTORY,
                 Arrays.stream(roots).mapToObj(NumericDouble::new).toArray(NumericDouble[]::new)
         );
     }
@@ -33,7 +33,8 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
         return PowerSeriesBase.<NumericDouble, NumericDouble, DoublePowerSeries>
                 ofPoints(
                 DoublePowerSeries::new,
-                NumericDoubleFactory.FACTORY,
+                DoubleFactory.FACTORY,
+                DoubleFactory.FACTORY,
                 points.entrySet().stream().collect(Collectors.toMap(
                         k -> new NumericDouble(k.getKey()),
                         k -> new NumericDouble(k.getValue())
@@ -44,11 +45,6 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
     @Override
     protected DoublePowerSeries buildFromCoefficients(List<NumericDouble> coefficients) {
         return new DoublePowerSeries(coefficients);
-    }
-
-    @Override
-    protected NumericDouble getZeroCoefficient() {
-        return NumericDoubleFactory.FACTORY.getZero();
     }
 
     public DoubleStream getDoubleCoefficients() {
@@ -90,8 +86,8 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
         for (int i = 0; i < resultPower; i++) {
             DoublePowerSeries integral = powersOfThis.get(i)
                     .moveRight()
-                    .multiplyByCoefficient(numerics.fromInteger(-2))
-                    .integrate(numerics.getZero());
+                    .multiplyByCoefficient(coefficientFactory.fromInteger(-2))
+                    .integrate(coefficientFactory.getZero());
             double v1 = integral.valueAt(integrationLimit);
             double v2 = integral.valueAt(-integrationLimit);
             gradientVector[i] = v1 - v2;
@@ -101,8 +97,8 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
 
         double[] hessianValues = powersOfThis.stream().mapToDouble(series -> {
             DoublePowerSeries integral = series
-                    .multiplyByCoefficient(numerics.fromInteger(2))
-                    .integrate(numerics.getZero());
+                    .multiplyByCoefficient(coefficientFactory.fromInteger(2))
+                    .integrate(coefficientFactory.getZero());
             return integral.valueAt(integrationLimit) - integral.valueAt(-integrationLimit);
         }).toArray();
 
@@ -117,7 +113,7 @@ public class DoublePowerSeries extends PowerSeriesBase<NumericDouble, NumericDou
         Matrix inverseHessian = hessian.inverse();
 
         return new DoublePowerSeries(Stream.concat(
-                Stream.of(numerics.getZero()),
+                Stream.of(coefficientFactory.getZero()),
                 Arrays.stream(grad.times(inverseHessian).times(-1).getArray()[0])
                         .mapToObj(NumericDouble::new)
         ).collect(Collectors.toList()));

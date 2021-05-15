@@ -2,6 +2,7 @@ package dyomin.mikhail.vision.math.powerseries;
 
 import dyomin.mikhail.vision.math.numeric.Coefficient;
 import dyomin.mikhail.vision.math.numeric.Numeric;
+import dyomin.mikhail.vision.math.numeric.factory.CoefficientFactory;
 import dyomin.mikhail.vision.math.numeric.factory.NumericFactory;
 
 import java.util.*;
@@ -10,37 +11,44 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>> implements PowerSeries<N, C, PS> {
+public abstract class PowerSeriesBase<
+        N extends Numeric<N>,
+        C extends Coefficient<N, C>,
+        PS extends PowerSeriesBase<N, C, PS>
+        >
+        implements
+        PowerSeries<N, C, PS> {
+
     protected final List<C> coefficients;
-    protected final NumericFactory<N> numerics;
+    protected final CoefficientFactory<N, C> coefficientFactory;
+    protected final NumericFactory<N> numericFactory;
 
     protected abstract PS buildFromCoefficients(List<C> coefficients);
 
-    protected abstract C getZeroCoefficient();
-
-    protected PowerSeriesBase(NumericFactory<N> numerics, List<C> coefficients) {
+    protected PowerSeriesBase(NumericFactory<N> numericFactory, CoefficientFactory<N, C> coefficientFactory, List<C> coefficients) {
+        this.numericFactory = numericFactory;
         this.coefficients = coefficients;
-        this.numerics = numerics;
+        this.coefficientFactory = coefficientFactory;
     }
 
-    protected static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
+    public static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
     PS withRoots(
-            Function<List<N>, PS> builderFromCoefficients,
-            NumericFactory<N> numerics,
+            Function<List<C>, PS> builderFromCoefficients,
+            CoefficientFactory<N, C> coefficientFactory,
             N[] roots
     ) {
-        return withRoots(builderFromCoefficients, numerics, Arrays.asList(roots));
+        return withRoots(builderFromCoefficients, coefficientFactory, Arrays.asList(roots));
     }
 
 
-    protected static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
+    public static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
     PS withRoots(
-            Function<List<N>, PS> builderFromCoefficients,
-            NumericFactory<N> numerics,
+            Function<List<C>, PS> builderFromCoefficients,
+            CoefficientFactory<N, C> coefficientFactory,
             List<N> roots
     ) {
         PS result = builderFromCoefficients.apply(
-                Collections.singletonList(numerics.getOne())
+                Collections.singletonList(coefficientFactory.getOne())
         );
 
         for (N root : roots) {
@@ -50,35 +58,48 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
         return result;
     }
 
-    protected static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
+    public static <N extends Numeric<N>, C extends Coefficient<N, C>, PS extends PowerSeriesBase<N, C, PS>>
     PS ofPoints(
-            Function<List<N>, PS> builderFromCoefficients,
-            NumericFactory<N> numerics,
+            Function<List<C>, PS> builderFromCoefficients,
+            NumericFactory<N> numericFactory,
+            CoefficientFactory<N, C> coefficientFactory,
             Map<N, C> points
-    ){
+    ) {
         List<Map.Entry<N, C>> pts = new ArrayList<>(points.entrySet());
 
         return IntStream.range(0, pts.size())
-                .mapToObj(i ->{
-            List<N> xsNoI = pts.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+                .mapToObj(i -> {
+                    List<N> xsNoI = pts.stream().map(Map.Entry::getKey).collect(Collectors.toList());
 
-            Map.Entry<N, C> ptI = pts.get(i);
+                    Map.Entry<N, C> ptI = pts.get(i);
                     N xI = ptI.getKey();
                     C yI = ptI.getValue();
 
                     xsNoI.remove(i);
 
-                    N denominator = xsNoI.stream().map(xI::minus).reduce(N::plus).orElse(numerics.getOne());
+                    N denominator = xsNoI.stream().map(xI::minus).reduce(N::plus).orElse(numericFactory.getOne());
 
-                    return withRoots(builderFromCoefficients, numerics, xsNoI).divide(denominator).multiplyByCoefficient(yI);
+                    return withRoots(builderFromCoefficients, coefficientFactory, xsNoI).divide(denominator).multiplyByCoefficient(yI);
                 })
                 .reduce(PS::plus)
-                .orElse(builderFromCoefficients.apply(Collections.singletonList(numerics.getZero())));
+                .orElse(builderFromCoefficients.apply(Collections.singletonList(coefficientFactory.getZero())));
+    }
+
+    public static <
+            N extends Numeric<N>,
+            C extends Coefficient<N, C>,
+            PS extends PowerSeries<N, C, PS>
+            >
+    CoefficientFactory<N, PS> getFactory(
+            Function<List<C>, PS> buildFromCoefficients,
+            CoefficientFactory<N,C> coefficientFactory
+    ) {
+        return n -> buildFromCoefficients.apply(Collections.singletonList(coefficientFactory.fromInteger(n)));
     }
 
     @Override
     public C valueAt(N point) {
-        C sum = getZeroCoefficient();
+        C sum = coefficientFactory.getZero();
 
         ListIterator<C> coefficientIterator = coefficients.listIterator(coefficients.size());
         while (coefficientIterator.hasPrevious()) {
@@ -92,7 +113,7 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
     public PS moveRight() {
         return buildFromCoefficients(Stream
                 .concat(
-                        Stream.of(getZeroCoefficient()),
+                        Stream.of(coefficientFactory.getZero()),
                         coefficients.stream()
                 )
                 .collect(Collectors.toList())
@@ -125,7 +146,7 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
     public PS derivative() {
         return buildFromCoefficients(
                 IntStream.range(1, coefficients.size())
-                        .mapToObj(i -> coefficients.get(i).multiplyByNumeric(numerics.fromInteger(i)))
+                        .mapToObj(i -> coefficients.get(i).multiplyByNumeric(numericFactory.fromInteger(i)))
                         .collect(Collectors.toList())
         );
     }
@@ -135,7 +156,7 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
         return buildFromCoefficients(Stream.concat(
                 Stream.of(constant),
                 IntStream.range(0, coefficients.size())
-                        .mapToObj(i -> coefficients.get(i).divide(numerics.fromInteger(i + 1)))
+                        .mapToObj(i -> coefficients.get(i).divide(numericFactory.fromInteger(i + 1)))
         ).collect(Collectors.toList()));
     }
 
@@ -169,7 +190,7 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
     public C nthCoefficient(int n) {
         return n < coefficients.size()
                 ? coefficients.get(n)
-                : getZeroCoefficient();
+                : coefficientFactory.getZero();
     }
 
     @Override
@@ -211,7 +232,7 @@ public abstract class PowerSeriesBase<N extends Numeric<N>, C extends Coefficien
         List<C> result = new ArrayList<>(resultPower);
 
         for (int n = 0; n < resultPower; n++) {
-            C sum = getZeroCoefficient();
+            C sum = coefficientFactory.getZero();
 
             for (int i = 0; i <= n; i++) {
                 sum = sum.plus(this.nthCoefficient(i).multiply(other.nthCoefficient(n - i)));

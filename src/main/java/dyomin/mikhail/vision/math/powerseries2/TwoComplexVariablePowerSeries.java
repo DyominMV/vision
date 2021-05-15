@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class TwoComplexVariablePowerSeries extends TwoVariablePowerSeriesBase<
         Complex,
+        Complex,
         ComplexPowerSeries,
         TwoComplexVariablePowerSeries
         > {
@@ -28,21 +29,11 @@ public class TwoComplexVariablePowerSeries extends TwoVariablePowerSeriesBase<
     }
 
     private TwoComplexVariablePowerSeries(List<ComplexPowerSeries> listOfSeries, int any) {
-        super(ComplexFactory.FACTORY, listOfSeries);
+        super(ComplexFactory.FACTORY, ComplexFactory.FACTORY, ComplexPowerSeries::new, listOfSeries);
     }
 
     @Override
     protected TwoComplexVariablePowerSeries buildFromCoefficients(List<ComplexPowerSeries> coefficients) {
         return new TwoComplexVariablePowerSeries(coefficients, 0);
-    }
-
-    @Override
-    protected ComplexPowerSeries getZeroCoefficient() {
-        return new ComplexPowerSeries();
-    }
-
-    @Override
-    protected ComplexPowerSeries buildRegularPowerSeries(List<Complex> numerics) {
-        return new ComplexPowerSeries(numerics);
     }
 }

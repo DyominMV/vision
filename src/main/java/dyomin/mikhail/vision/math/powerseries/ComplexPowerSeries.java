@@ -12,7 +12,7 @@ public class ComplexPowerSeries extends PowerSeriesBase<Complex, Complex, Comple
     }
 
     public ComplexPowerSeries(List<Complex> coefficients) {
-        super(ComplexFactory.FACTORY, coefficients);
+        super(ComplexFactory.FACTORY, ComplexFactory.FACTORY, coefficients);
     }
 
     public static ComplexPowerSeries withRoots(Complex[] roots) {
@@ -26,10 +26,5 @@ public class ComplexPowerSeries extends PowerSeriesBase<Complex, Complex, Comple
     @Override
     protected ComplexPowerSeries buildFromCoefficients(List<Complex> coefficients) {
         return new ComplexPowerSeries(coefficients);
-    }
-
-    @Override
-    protected Complex getZeroCoefficient() {
-        return ComplexFactory.FACTORY.getZero();
     }
 }
