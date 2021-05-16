@@ -22,7 +22,7 @@ public interface Detector<V extends Vector<V>> extends SimpleImageFilter<V, Wrap
         return (x, y, image) -> this.detect(x,y,image) || other.detect(x,y,image);
     }
 
-    default Detector<V> not(Detector<V> other){
+    default Detector<V> not(){
         return (x, y, image) -> !this.detect(x,y,image);
     }
 
