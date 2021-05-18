@@ -1,4 +1,4 @@
-package dyomin.mikhail.vision.stereo.dsipathfinders;
+package dyomin.mikhail.vision.stereo.dsipathfinders.bool;
 
 import dyomin.mikhail.vision.images.ReadableImage;
 import dyomin.mikhail.vision.images.RgbImage;

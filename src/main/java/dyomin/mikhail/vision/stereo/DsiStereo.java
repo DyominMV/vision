@@ -23,7 +23,7 @@ public class DsiStereo<V extends Vector<V>> implements LineByLineStereo<V> {
     @Override
     public List<Disparity> getDisparities(List<V> left, List<V> right) {
         int[] solution = pathFinder.findPath(
-                dsiFactory.getDsi(left,right)
+                dsiFactory.getMatrixDsi(left,right)
         );
 
         for (int i = 0; i < solution.length; i++) {

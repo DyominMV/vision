@@ -18,6 +18,16 @@ public class DsiFactory<V extends Vector<V>> {
         this.metric = metric;
     }
 
+    public ReadableImage<WrappedDouble> getMatrixDsi(List<V> left, List<V> right) {
+        MatrixImage<WrappedDouble> result = new MatrixImage<>(left.size(), right.size());
+        for (int x = 0; x < result.getWidth(); x++) {
+            for (int y = 0; y < result.getHeight(); y++) {
+                result.setPixel(x, y, new WrappedDouble(metric.applyAsDouble(left.get(x), right.get(y))));
+            }
+        }
+        return result;
+    }
+
     public ReadableImage<WrappedDouble> getDsi(List<V> left, List<V> right){
         return new ReadableImage<WrappedDouble>() {
             @Override

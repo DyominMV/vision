@@ -1,10 +1,12 @@
-package dyomin.mikhail.vision.stereo.dsipathfinders;
+package dyomin.mikhail.vision.stereo.dsipathfinders.bool;
 
 import dyomin.mikhail.vision.filters.simple.detector.Detector;
 import dyomin.mikhail.vision.images.ReadableImage;
+import dyomin.mikhail.vision.stereo.dsipathfinders.PathFinder;
+import dyomin.mikhail.vision.stereo.dsipathfinders.bool.BoolDsiPathFinder;
 import dyomin.mikhail.vision.vectors.WrappedDouble;
 
-public class DetectedPathFinder implements PathFinder{
+public class DetectedPathFinder implements PathFinder {
     private final BoolDsiPathFinder delegate;
     private final Detector<WrappedDouble> detector;
 

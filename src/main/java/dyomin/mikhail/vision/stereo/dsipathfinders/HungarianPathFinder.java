@@ -7,17 +7,31 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 public class HungarianPathFinder implements PathFinder {
 
-    private double[][] calculateDsi(ReadableImage<WrappedDouble> dsi) {
-        double[][] result = Stream.generate(() -> new double[dsi.getHeight()])
-                .limit(dsi.getWidth())
-                .toArray(double[][]::new);
+    private final int additionalPoints;
+    private final double additionalWeights;
 
-        for (int l = 0; l < result.length; l++) {
-            for (int r = 0; r < result[l].length; r++) {
+    public HungarianPathFinder(int additionalPoints, double additionalWeights) {
+        this.additionalPoints = additionalPoints;
+        this.additionalWeights = additionalWeights;
+    }
+
+    private double[][] calculateDsi(ReadableImage<WrappedDouble> dsi) {
+        double[][] result =
+                Stream.generate(() ->
+                        DoubleStream.generate(() -> additionalWeights)
+                                .limit(dsi.getHeight() + additionalPoints)
+                                .toArray()
+                )
+                        .limit(dsi.getWidth() + additionalPoints)
+                        .toArray(double[][]::new);
+
+        for (int l = 0; l < result.length - additionalPoints; l++) {
+            for (int r = 0; r < result[l].length - additionalPoints; r++) {
                 result[l][r] = dsi.getPixel(l, r).value;
             }
         }
@@ -30,6 +44,8 @@ public class HungarianPathFinder implements PathFinder {
         return Arrays.stream(new HungarianAlgorithm(calculateDsi(dsi)).findOptimalAssignment())
                 .sorted(Comparator.comparingInt(pair -> pair[1]))
                 .mapToInt(pair -> pair[0])
+                .map(p -> p > dsi.getWidth() ? -1 : p)
+                .limit(dsi.getWidth())
                 .toArray();
     }
 
