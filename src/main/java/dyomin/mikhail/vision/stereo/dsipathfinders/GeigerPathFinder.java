@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 public class GeigerPathFinder implements PathFinder {
     private final IntToDoubleFunction jumpCost;
+    private final int maxJump;
 
     private class Jump {
         public final int length;
@@ -20,8 +21,9 @@ public class GeigerPathFinder implements PathFinder {
         }
     }
 
-    public GeigerPathFinder(IntToDoubleFunction jumpCost) {
+    public GeigerPathFinder(IntToDoubleFunction jumpCost, int maxJump) {
         this.jumpCost = jumpCost;
+        this.maxJump = maxJump;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class GeigerPathFinder implements PathFinder {
         double[][] costs = Stream.generate(() -> new double[n]).limit(n).toArray(double[][]::new);
         Jump[][] jumps = Stream.generate(() -> new Jump[n]).limit(n).toArray(Jump[][]::new);
 
-        for (int r = 0; r < n; r++) {
+        for (int r = 0; r < maxJump; r++) {
             costs[0][r] = jumpCost.applyAsDouble(r) + dsi.getPixel(0, r).value;
             costs[r][0] = jumpCost.applyAsDouble(r) + dsi.getPixel(r, 0).value;
             jumps[0][r] = new Jump(-1, false);
@@ -45,7 +47,7 @@ public class GeigerPathFinder implements PathFinder {
                 boolean vertical = true;
 
                 // searching for vertical jumps
-                for (int j = 1; r - j > 0; j++) {
+                for (int j = 1; (r - j > 0) && (j < maxJump); j++) {
                     double cost = costs[l][r - j] + jumpCost.applyAsDouble(j) + costHere;
                     if (cost < minCost) {
                         minCost = cost;
@@ -54,7 +56,7 @@ public class GeigerPathFinder implements PathFinder {
                 }
 
                 // searching for horizontal jumps
-                for (int j = 1; l - j > 0; j++) {
+                for (int j = 1; (l - j > 0) && (j < maxJump); j++) {
                     double cost = costs[l - j][r] + jumpCost.applyAsDouble(j) + costHere;
                     if (cost < minCost) {
                         minCost = cost;
@@ -73,7 +75,7 @@ public class GeigerPathFinder implements PathFinder {
         double minStart = Double.POSITIVE_INFINITY;
         Jump firstJump = new Jump(0,false);
 
-        for (int j = 0; j< n; j++){
+        for (int j = 0; j< maxJump; j++){
             double cost = costs[n-1][j] + jumpCost.applyAsDouble(j);
             if (cost < minStart){
                 minStart = cost;
@@ -95,7 +97,7 @@ public class GeigerPathFinder implements PathFinder {
         }
 
         Jump jump = firstJump;
-        while (jump.length != -1){
+        while (jump != null && jump.length != -1){
             result[l] = r;
 
             if (jump.vertical){

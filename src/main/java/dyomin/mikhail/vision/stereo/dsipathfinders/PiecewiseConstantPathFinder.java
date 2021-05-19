@@ -36,7 +36,7 @@ public class PiecewiseConstantPathFinder implements PathFinder {
                 .toArray(int[][]::new);
 
         for (int r = 0 ; r< n; r++){
-            costs[0][r] = dsi.getPixel(0, r).value;
+            costs[0][r] = jumpCost.getCost(dsi.getPixel(0, r).value, r);
         }
 
         for (int r = 0 ; r< n; r++){

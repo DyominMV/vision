@@ -33,7 +33,7 @@ public class PiecewiseLinearPathFinder implements PathFinder{
                 .toArray(int[][]::new);
 
         for (int r = 0 ; r< n; r++){
-            costs[0][r] = dsi.getPixel(0, r).value;
+            costs[0][r] = dsi.getPixel(0, r).value + gradientCost.applyAsDouble(r);
         }
 
         for (int r = 0 ; r< n; r++){
@@ -73,7 +73,7 @@ public class PiecewiseLinearPathFinder implements PathFinder{
             double minCost = Double.POSITIVE_INFINITY;
 
             for (int j = 0; j < n; j++){
-                double cost = costs[n-1][j];
+                double cost = costs[n-1][j] + gradientCost.applyAsDouble(Math.abs(n-1-j));
 
                 if (cost < minCost) {
                     minCost = cost;
