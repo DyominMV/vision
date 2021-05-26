@@ -27,14 +27,15 @@ public class StereoController {
 
         ReadableImage<RGB> left = RgbImage.loadFromFile(new File(
                 StereoController.class.getResource("/photos/babyL.png").getFile()
-        )).scale(0.5);
+        )).scale(0.5);//.applyFilter(new ScaleSpaceFilter<RGB>(2,4,8,16,32));
 
         ReadableImage<RGB> right = RgbImage.loadFromFile(new File(
                 StereoController.class.getResource("/photos/babyR.png").getFile()
-        )).scale(0.5);
+        )).scale(0.5);//.applyFilter(new ScaleSpaceFilter<RGB>(2,4,8,16,32));
 
 //        PathFinder pathFinder = new PiecewiseLinearPathFinder((j)->j*0.08 + 0.08* Math.sqrt(j) / 150);
-        PathFinder pathFinder = new PiecewiseConstantPathFinder((e, j)->e + j*0.08 + 0.08* Math.sqrt(j) / 150);
+//        PathFinder pathFinder = new PiecewiseConstantPathFinder((e, j)->e + j*0.08 + 0.08* Math.sqrt(j) / 150);
+        PathFinder pathFinder = new CellStepPathFinder(j-> j*j*0.15/150 +j*0.15 );
 
         final int ROW_NUMBER = 220;
 
