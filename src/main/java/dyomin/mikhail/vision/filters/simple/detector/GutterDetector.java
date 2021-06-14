@@ -8,18 +8,18 @@ public class GutterDetector implements Detector<WrappedDouble> {
 
     @Override
     public boolean detect(int x, int y, ReadableImage<WrappedDouble> image) {
-        double here = image.getSubpixel(x,y).value;
-        double top = image.getSubpixel(x, y-3).value;
-        double topLeft = image.getSubpixel(x-3, y-3).value;
-        double left = image.getSubpixel(x-3, y).value;
-        double bottomLeft = image.getSubpixel(x-3, y+3).value;
-        double bottom = image.getSubpixel(x, y+3).value;
-        double bottomRight = image.getSubpixel(x+3, y+3).value;
-        double right = image.getSubpixel(x+3, y).value;
-        double topRight = image.getSubpixel(x+3, y-3).value;
+        double here = image.getPixel(x,y).value;
+        double top = image.getPixel(x, y-1).value;
+        double topLeft = image.getPixel(x-1, y-1).value;
+        double left = image.getPixel(x-1, y).value;
+        double bottomLeft = image.getPixel(x-1, y+1).value;
+        double bottom = image.getPixel(x, y+1).value;
+        double bottomRight = image.getPixel(x+1, y+1).value;
+        double right = image.getPixel(x+1, y).value;
+        double topRight = image.getPixel(x+1, y-1).value;
 
-        double f_x = (right - left) /2;
-        double f_y = (bottom - top)/2;
+        double f_x = (right - left) / 2;
+        double f_y = (bottom - top) / 2;
 
         double f_xx = right + left - 2 * here;
         double f_yy = top + bottom - 2 * here;

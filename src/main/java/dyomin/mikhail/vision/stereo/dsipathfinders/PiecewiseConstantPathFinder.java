@@ -7,6 +7,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@Deprecated
 public class PiecewiseConstantPathFinder implements PathFinder {
     public interface JumpCost{
         double getCost(double edgeWeight, int jumpLength);

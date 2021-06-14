@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 public class Vision extends Application {
 
-    private static final Webcam webcam = Webcam.getWebcams().get(0);
+    private static final Webcam webcam = Webcam.getWebcams().get(2);
 
     static {
         System.out.println(Webcam.getWebcams());

@@ -7,11 +7,12 @@ import java.util.function.IntToDoubleFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@Deprecated
 public class GeigerPathFinder implements PathFinder {
     private final IntToDoubleFunction jumpCost;
     private final int maxJump;
 
-    private class Jump {
+    private static class Jump {
         public final int length;
         public final boolean vertical;
 

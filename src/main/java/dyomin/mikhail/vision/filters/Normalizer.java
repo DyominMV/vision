@@ -21,7 +21,7 @@ public class Normalizer<V extends Vector<V>> implements ImageFilter<V, V> {
                         .orElse(0);
 
         if (length == 0) {
-            ((SinglePointFilter<V, V>) value -> null).filter(image, output);
+            ((SinglePointFilter<V, V>) value -> value.amplify(0)).filter(image, output);
         } else {
             new Amplifier<V>(1 / length).filter(image, output);
         }
